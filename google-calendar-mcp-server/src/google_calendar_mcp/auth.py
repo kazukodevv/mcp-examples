@@ -31,8 +31,11 @@ def authenticate_google_calendar():
     
     # OAuth 2.0 configuration
     scopes = [
-        'https://www.googleapis.com/auth/calendar',
-        'https://www.googleapis.com/auth/calendar.events'
+        "https://www.googleapis.com/auth/calendar",
+        "https://www.googleapis.com/auth/calendar.events",
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "openid"
     ]
     
     redirect_uri = 'http://localhost:8080'
@@ -98,8 +101,8 @@ def authenticate_google_calendar():
             print("\n🔑 Note: Access token expires in 1 hour, but refresh token is permanent.")
         
         print("\n💡 For uv users, create a .env file:")
-        print(f"GOOGLE_CLIENT_ID=", client_id)
-        print(f"GOOGLE_CLIENT_SECRET=", client_secret)
+        print(f"GOOGLE_CLIENT_ID={client_id}")
+        print(f"GOOGLE_CLIENT_SECRET={client_secret}")
         print(f"GOOGLE_REFRESH_TOKEN={credentials.refresh_token}")
         
         print("\n🎉 Your Google Calendar MCP server is ready to use!")

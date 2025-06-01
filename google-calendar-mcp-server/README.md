@@ -18,11 +18,54 @@ A Model Context Protocol (MCP) server that provides access to Google Calendar fu
 
 1. **Python 3.9+**: Make sure you have Python 3.9 or higher installed
 2. **uv**: Install uv package manager: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-3. **Google Cloud Project**: Create a project in [Google Cloud Console](https://console.cloud.google.com/)
-4. **Enable Google Calendar API**: Enable the Calendar API for your project
-5. **OAuth 2.0 Credentials**: Create OAuth 2.0 client credentials
-   - Application type: "Desktop application"
-   - Add `http://localhost:8080` to authorized redirect URIs
+3. **Google Cloud Project & API Setup**: Follow the detailed setup below
+
+### Google Cloud Project Setup
+
+#### Step 1: Create a Google Cloud Project
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Click "Select a project" → "New Project"
+3. Enter a project name (e.g., "my-calendar-app")
+4. Click "Create"
+
+#### Step 2: Enable Google Calendar API
+1. In your Google Cloud project, go to "APIs & Services" → "Library"
+2. Search for "Google Calendar API"
+3. Click on "Google Calendar API" from the results
+4. Click the "Enable" button
+5. Wait for the API to be enabled (you'll see a green checkmark)
+
+#### Step 3: Create OAuth 2.0 Credentials
+1. Go to "APIs & Services" → "Credentials"
+2. Click "+ CREATE CREDENTIALS" → "OAuth client ID"
+3. If prompted, configure the OAuth consent screen first:
+   - Choose "External" (unless you have a Google Workspace account)
+   - Fill in the required fields:
+     - App name: Your app name (e.g., "My Calendar MCP Server")
+     - User support email: Your email
+     - Developer contact: Your email
+   - Click "Save and Continue" through the remaining steps
+4. For OAuth client ID creation:
+   - Application type: Select "Desktop application"
+   - Name: Give it a name (e.g., "Calendar MCP Client")
+   - Click "Create"
+5. **Important**: Add authorized redirect URI:
+   - Click on your newly created OAuth client to edit it
+   - Under "Authorized redirect URIs", click "ADD URI"
+   - Enter exactly: `http://localhost:8080`
+   - Click "Save"
+6. Download your credentials:
+   - Click the download button (⬇️) next to your OAuth client
+   - Save the JSON file (you'll need the client ID and secret from this file)
+
+#### Quick Setup Summary
+
+**TL;DR**: 
+1. Create a Google Cloud project → Enable "Google Calendar API" → Create "Desktop application" OAuth credentials → Add redirect URI `http://localhost:8080` → Download credentials JSON
+2. From the downloaded JSON, extract your `client_id` and `client_secret`
+3. Create a `.env` file with these values and run the auth setup
+
+**Need more help?** The detailed steps above guide you through each screen in the Google Cloud Console.
 
 ## Installation
 
@@ -56,6 +99,8 @@ google-calendar-mcp-server/
 
 2. **Run the authentication script**:
    ```bash
+   export OAUTHLIB_INSECURE_TRANSPORT=1
+
    uv run google-calendar-auth
    ```
 
@@ -134,6 +179,10 @@ List all available calendars.
 ## Configuration with Claude Desktop
 
 To use this server with Claude Desktop, add it to your `claude_desktop_config.json`:
+
+```sh
+code ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
 
 ```json
 {
