@@ -1,4 +1,3 @@
-# src/google_calendar_mcp/server.py
 #!/usr/bin/env python3
 
 import asyncio

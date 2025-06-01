@@ -77,11 +77,6 @@ Start the MCP server:
 uv run google-calendar-mcp
 ```
 
-Or for development:
-```bash
-uv run --reload google-calendar-mcp
-```
-
 ### Available Tools
 
 The server provides the following tools:
@@ -193,11 +188,20 @@ Alternatively, if you have a `.env` file, you can just use:
 1. Edit the source files in `src/google_calendar_mcp/`
 2. Test your changes:
    ```bash
+   # Run unit tests
+   uv run pytest
+   
+   # Test server manually
+   uv run python scripts/mcp_client_test.py
+   
+   # Basic server test
    uv run google-calendar-mcp
    ```
-3. Run tests (if you add them):
+3. Run code quality checks:
    ```bash
-   uv run pytest
+   uv run black .
+   uv run ruff check .
+   uv run mypy src/
    ```
 
 ### uv Commands
@@ -280,19 +284,117 @@ Once configured, you can ask your AI assistant to:
 - Look at Claude Desktop logs for error messages
 - Test the server manually first: `uv run google-calendar-mcp`
 
-## Contributing
+## Testing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes
-4. Run tests and linting: `uv run black . && uv run ruff check .`
-5. Commit your changes: `git commit -am 'Add feature'`
-6. Push to the branch: `git push origin feature-name`
-7. Create a Pull Request
+The project includes several ways to test the MCP server:
 
-## License
+### 1. Unit Tests
 
-MIT License - feel free to modify and distribute as needed.
+Run the full test suite with pytest:
+
+```bash
+# Install development dependencies first
+uv sync --dev
+
+# Run all tests
+uv run pytest
+
+# Run tests with verbose output
+uv run pytest -v
+
+# Run tests with coverage
+uv run pytest --cov=src/google_calendar_mcp
+
+# Run specific test file
+uv run pytest tests/test_server.py
+
+# Run specific test method
+uv run pytest tests/test_server.py::TestGoogleCalendarServer::test_server_initialization
+```
+
+### 2. Manual MCP Client Test
+
+Use the included test script to simulate an MCP client:
+
+```bash
+# Run the MCP client test script
+uv run python scripts/mcp_client_test.py
+```
+
+This script will:
+- Test server initialization
+- List available tools
+- Try calling basic functions
+- Verify MCP protocol compliance
+
+### 3. Basic Server Test
+
+Test server startup and tool listing:
+
+```bash
+# Quick server startup test
+uv run python -c "
+from src.google_calendar_mcp.server import GoogleCalendarServer
+server = GoogleCalendarServer()
+print('✅ Server initialized successfully')
+"
+```
+
+### 4. Manual MCP Protocol Test
+
+Test the server manually using JSON-RPC over stdin/stdout:
+
+```bash
+# Test tools list
+echo '{"jsonrpc": "2.0", "id": 1, "method": "tools/list", "params": {}}' | \
+  uv run python src/google_calendar_mcp/server.py
+
+# Test initialization
+echo '{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "test", "version": "1.0.0"}}}' | \
+  uv run python src/google_calendar_mcp/server.py
+```
+
+### 5. Integration Test with Authentication
+
+If you have set up authentication, test actual calendar operations:
+
+```bash
+# Test listing events (requires authentication)
+echo '{"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "list_events", "arguments": {"max_results": 5}}}' | \
+  uv run python src/google_calendar_mcp/server.py
+```
+
+### 6. Development Testing
+
+When developing, use these commands for continuous testing:
+
+```bash
+# Install dev dependencies
+uv sync --dev
+
+# Run linting and formatting
+uv run ruff check .
+uv run black .
+uv run mypy src/
+
+# Run tests in watch mode (requires pytest-watch)
+uv add --dev pytest-watch
+uv run ptw tests/
+```
+
+### Test Environment Variables
+
+For testing without real Google credentials, you can use mock environment variables:
+
+```bash
+# Set test credentials
+export GOOGLE_CLIENT_ID="test_client_id"
+export GOOGLE_CLIENT_SECRET="test_client_secret"
+export GOOGLE_REFRESH_TOKEN="test_refresh_token"
+
+# Run tests
+uv run pytest
+```
 
 ## Additional Resources
 

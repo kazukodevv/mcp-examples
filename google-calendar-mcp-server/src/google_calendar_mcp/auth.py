@@ -1,4 +1,3 @@
-# src/google_calendar_mcp/auth.py
 #!/usr/bin/env python3
 
 import os
@@ -14,7 +13,6 @@ def authenticate_google_calendar():
     """
     Authenticate with Google Calendar API and get refresh token.
     """
-    # Check for required environment variables
     client_id = os.getenv('GOOGLE_CLIENT_ID')
     client_secret = os.getenv('GOOGLE_CLIENT_SECRET')
     
@@ -100,8 +98,8 @@ def authenticate_google_calendar():
             print("\n🔑 Note: Access token expires in 1 hour, but refresh token is permanent.")
         
         print("\n💡 For uv users, create a .env file:")
-        print("GOOGLE_CLIENT_ID=your_client_id")
-        print("GOOGLE_CLIENT_SECRET=your_client_secret")
+        print(f"GOOGLE_CLIENT_ID=", client_id)
+        print(f"GOOGLE_CLIENT_SECRET=", client_secret)
         print(f"GOOGLE_REFRESH_TOKEN={credentials.refresh_token}")
         
         print("\n🎉 Your Google Calendar MCP server is ready to use!")
